@@ -13,7 +13,11 @@ Yuni is my very own AI Assistant built using the ChatGPT API. She functions just
 
 ---
 
+
+
 > **Note:** This is a side project primarily for fun, but if you have any ideas on how to improve it, please let me know!
+
+
 
 ---
 
