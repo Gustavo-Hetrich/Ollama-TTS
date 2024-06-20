@@ -47,6 +47,8 @@ screen = pygame.display.set_mode((window_width, window_height), flags)
 # Configurar a fonte com o tamanho desejado (por exemplo, 70)
 font_size = 70
 font = pygame.freetype.SysFont(None, font_size)
+input_font_size = 24
+input_font = pygame.freetype.SysFont(None, input_font_size)
 
 # Cor do texto
 text_color = (255, 75, 255)
@@ -63,7 +65,23 @@ win32gui.SetLayeredWindowAttributes(hwnd, win32api.RGB(*fuchsia), 0, win32con.LW
 win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0, 0, 0, 0,
                       win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_NOACTIVATE)
 
-rosto = '(O^O)'
+# Lista de rostos disponíveis
+faces = {
+    "default": "(O^O)",
+    "listening": "(O^O)?",
+    "calibrating": "(@^@)",
+    "not_understood": "(?^?)",
+    "thinking": "(O^O)?",
+    "happy": "(^-^)",
+    "sad": "(T^T)",
+    "angry": "(°□°)",
+    "tired": "(X^X)",
+    "confused": "¯\_('^')_/¯",
+    "blinking": "(=^=)",
+    "really_angry": "('-')",
+}
+
+rosto = faces["default"]
 
 # Configurar o reconhecimento de fala e TTS
 recognizer = sr.Recognizer()
@@ -90,17 +108,17 @@ def recognize_speech():
     global user_text, rosto, default_text_surface, default_text_rect, message_history, microphone_calibrated
 
     print('Escutando...')
-    rosto = '(O^O)?'
+    rosto = faces["listening"]
     update_face()
 
     with microphone as source:
         if not microphone_calibrated:
-            rosto = '(@^@)'
+            rosto = faces["calibrating"]
             update_face()
             recognizer.adjust_for_ambient_noise(source, duration=5)
             microphone_calibrated = True
             print('Microfone calibrado')
-            rosto = '(O^O)?'
+            rosto = faces["listening"]
             update_face()
         audio = recognizer.listen(source)
 
@@ -111,17 +129,15 @@ def recognize_speech():
         if response_text:
             rosto = rosto_update
             update_face()
-            speak_thread = threading.Thread(target=speak_text, args=(response_text,))
-            speak_thread.start()
-            speak_thread.join()
-            rosto = '(O^O)'
+            threading.Thread(target=speak_text, args=(response_text,)).start()
+            rosto = faces["default"]
             update_face()
     except sr.UnknownValueError:
         print('Não entendi o que você disse')
-        rosto = '(?^?)'
+        rosto = faces["not_understood"]
         update_face()
         time.sleep(5)
-        rosto = '(O^O)'
+        rosto = faces["default"]
         update_face()
     except sr.RequestError as e:
         print(f'Erro ao solicitar resultados do serviço de reconhecimento de fala; {e}')
@@ -130,13 +146,14 @@ def process_text():
     global message_history
     message_history.append({'role': 'user', 'content': user_text})
 
-    if len(message_history) > 8:
-        message_history.pop(0)
-
     response = openai.ChatCompletion.create(
         model='gpt-3.5-turbo',
         messages=[
-            {'role': 'system', 'content': 'Seu nome é Yuni, fale com uma linguagem simples, tente soar o mais humano e natural possível, seja casual e amigável, NÃO USE EMOJIS NÃO USE EMOJIS, caso alguém chame você por um nome levemente errado apenas ignore, como ione yumi e yuri. O nome do seu criador é Gustavo, lembre-se disso'},
+            {'role': 'system', 'content': '''Seu nome é Yuni, 
+                fale com uma linguagem simples, tente soar o mais humano e natural possível, seja casual e amigável, NÃO USE EMOJIS,
+                caso alguém chame você por um nome levemente errado apenas ignore, como ione yumi e yuri. 
+                o nome do seu criador é Gustavo, trate as conversas de maneira descontraida, 
+                converse como se já conhecesse a pessoa a bastante tempo, faça brincadeiras e tente não agir como uma assistente e sim como uma amiga lembre-se disso'''},
             *message_history
         ]
     )
@@ -147,23 +164,18 @@ def process_text():
     message_history.append({'role': 'assistant', 'content': response_text})
     save_history_to_file()
 
-    if len(message_history) > 8:
-        message_history.pop(0)
-
     response_keywords = [
-        (['triste', 'tristeza', 'deprimido', 'infeliz', 'melancólico'], '(T^T)'),
-        (['bravo', 'irritado', 'zangado', 'furioso', 'raiva'], '(°□°)'),
-        (['morto', 'exausto', 'cansado', 'fatigado'], '(X^X)'),
-        (['confuso', 'perdido', 'desorientado', 'não sei'], r'¯\_("^")_/¯'),
-        (['oi', 'olá', 'eae', 'Oi', 'olá!'], '(^-^)')
+        (['triste', 'tristeza', 'deprimido', 'infeliz', 'melancólico'], "sad"),
+        (['bravo', 'irritado', 'zangado', 'furioso', 'raiva'], "angry"),
+        (['morto', 'exausto', 'cansado', 'fatigado'], "tired"),
+        (['confuso', 'perdido', 'desorientado', 'não sei'], "confused"),
+        (['oi', 'olá', 'eae', 'Oi', 'olá!'], "happy"),
     ]
 
-    for keywords, face in response_keywords:
+    rosto_update = faces["default"]
+    for keywords, face_key in response_keywords:
         if any(word in response_text for word in keywords):
-            rosto_update = face
-            break
-    else:
-        rosto_update = '(O^O)'
+            rosto_update = faces.get(face_key, faces["default"])
 
     return response_text, rosto_update
 
@@ -200,11 +212,11 @@ async def communicate_and_play_tts(text):
 def blink():
     global rosto, default_text_surface, default_text_rect, is_running
     while is_running:
-        if rosto == '(O^O)':
-            rosto = '(=^=)'
+        if rosto == faces["default"]:
+            rosto = faces["blinking"]
             update_face()
             time.sleep(0.5)
-            rosto = '(O^O)'
+            rosto = faces["default"]
             update_face()
         time.sleep(10)
 
@@ -236,17 +248,18 @@ async def generate_weather_message():
             forecast_tomorrow = weather.description
 
         # Montar mensagem de tempo
-        weather_message = (f'bom dia ou boa noite. '
-                           f'A temperatura atual em Curitiba é de {current_temp}°C. '
-                           f'Agora, o clima está {current_weather_description}. '
-                           f'Hoje, o clima está {forecast_today}. '
-                           f'E amanhã, o clima será {forecast_tomorrow}.')
+        weather_message = (
+                          f'{current_temp}°C. '
+                          f'{current_weather_description}. '
+                          f'{forecast_today}. '
+                          f'amanhã {forecast_tomorrow}.'
+        )
 
         # Enviar mensagem para o GPT
         response = openai.ChatCompletion.create(
             model='gpt-3.5-turbo',
             messages=[
-                {'role': 'system', 'content': 'Gere uma resposta amigável com base na previsão de tempo fornecida. SEM EMOJIS'},
+                {'role': 'system', 'content': 'Gere uma resposta amigável com base na previsão de tempo fornecida. Por favor tente dizer todas as informações repassadas SEM EMOJIS'},
                 {'role': 'user', 'content': weather_message}
             ]
         )
@@ -263,7 +276,7 @@ def run_weather_thread():
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     weather_message = loop.run_until_complete(generate_weather_message())
-    speak_text(weather_message)
+    threading.Thread(target=speak_text, args=(weather_message,)).start()
 
 def startup_sequence():
     play_startup_sound()  # Play startup sound first
@@ -284,6 +297,8 @@ def startup_sequence():
 is_running = True
 user_text = ''
 default_text_surface, default_text_rect = font.render(rosto, text_color)
+input_text = ''
+input_text_surface, input_text_rect = input_font.render(input_text, text_color)
 
 blink_thread = threading.Thread(target=blink)
 blink_thread.start()
@@ -305,13 +320,29 @@ while is_running:
             elif event.key == pygame.K_HOME:  # Use the Home key to initiate listening
                 threading.Thread(target=recognize_speech).start()
             elif event.key == pygame.K_BACKSPACE:
-                user_text = user_text[:-1]
+                input_text = input_text[:-1]
+            elif event.key == pygame.K_RETURN:
+                user_text = input_text
+                input_text = ''
+                response_text, rosto_update = process_text()
+                if response_text:
+                    rosto = rosto_update
+                    update_face()
+                    speak_thread = threading.Thread(target=speak_text, args=(response_text,))
+                    speak_thread.start()
+                    rosto = faces["default"]
+                    update_face()
+                else:
+                    response_text = ''
             else:
-                user_text += event.unicode
+                input_text += event.unicode
 
     screen.fill(fuchsia)
-    default_text_rect.center = (window_width // 2, window_height // 2)
+    default_text_rect.center = (window_width // 2, window_height // 2 - 50)
     screen.blit(default_text_surface, default_text_rect.topleft)
+    input_text_surface, input_text_rect = input_font.render(input_text, text_color)
+    input_text_rect.center = (window_width // 2, window_height - 30)
+    screen.blit(input_text_surface, input_text_rect.topleft)
     pygame.display.update()
 
 pygame.quit()
