@@ -6,8 +6,8 @@ Yuni is my very own AI Assistant built using the ChatGPT API. She functions just
 
 ## Key Features
 
-- **Persistent Memory:** On first boot, Yuni creates a TXT file to store all the messages exchanged. This means she remembers past conversations even after the program is closed.
-- **Convenient Position:** Yuni is always on the bottom-right of your screen and occasionally blinks (=^=).
+- **She will remeber this:** On first boot, Yuni creates a TXT file to store all the messages exchanged. This means she remembers past conversations even after the program is closed.
+- **Aways with you:** Yuni is always on the bottom-right of your screen and occasionally blinks (=^=).
 - **Voice Interaction:** To interact with her, simply press the Enter key. She will calibrate the microphone (@^@) and start listening to you (O^O)?.
 - **Emotions:** Depending on the answer, Yuni will make a new Unicode based face, like (T_T) or -\_('-'_/-.
 
