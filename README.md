@@ -11,8 +11,10 @@ Yuni is my very own AI Assistant built using the ChatGPT API. She functions just
 - **Voice Interaction:** To interact with her, simply press the Enter key. She will calibrate the microphone (@^@) and start listening to you (O^O)?.
 - **Emotions.** Depending on the answer, Yuni will make a new Unicode based face, like (T_T) or -\_('-'_/-.
 
-
+---
 
 > **Note:** This is a side project primarily for fun, but if you have any ideas on how to improve it, please let me know!
+
+---
 
 You can use and modify this code as much as you want
