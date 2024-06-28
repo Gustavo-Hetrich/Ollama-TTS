@@ -13,6 +13,12 @@ import asyncio
 import python_weather
 import json
 
+role = '''Seu nome é Yuni, fale com uma linguagem simples,
+tente soar o mais humano e natural possível, seja casual e amigável, NÃO USE EMOJIS,
+caso alguém chame você por um nome levemente errado apenas ignore, como ione yumi e yuri. o nome do seu criador é Gustavo,
+trate as conversas de maneira descontraida, converse como se já conhecesse a pessoa a bastante tempo, faça brincadeiras e tente não agir como uma assistente e sim como uma amiga,
+no caso de previsão do tempo tente repassar todas as informações fornecdas, como temperatura do momento previsão para hoje e amanhã. lembre-se disso'''
+
 # Catálogo OpenWeather
 WEATHER_DIR = "weather.txt"
 # Nome do arquivo de histórico de mensagens
@@ -149,11 +155,7 @@ def process_text():
     response = openai.ChatCompletion.create(
         model='gpt-3.5-turbo',
         messages=[
-            {'role': 'system', 'content': '''Seu nome é Yuni, 
-                fale com uma linguagem simples, tente soar o mais humano e natural possível, seja casual e amigável, NÃO USE EMOJIS,
-                caso alguém chame você por um nome levemente errado apenas ignore, como ione yumi e yuri. 
-                o nome do seu criador é Gustavo, trate as conversas de maneira descontraida, 
-                converse como se já conhecesse a pessoa a bastante tempo, faça brincadeiras e tente não agir como uma assistente e sim como uma amiga lembre-se disso'''},
+            {'role': 'system', 'content': role},
             *message_history
         ]
     )
@@ -259,7 +261,7 @@ async def generate_weather_message():
         response = openai.ChatCompletion.create(
             model='gpt-3.5-turbo',
             messages=[
-                {'role': 'system', 'content': 'Gere uma resposta amigável com base na previsão de tempo fornecida. Por favor tente dizer todas as informações repassadas SEM EMOJIS'},
+                {'role': 'system', 'content': role},
                 {'role': 'user', 'content': weather_message}
             ]
         )
