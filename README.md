@@ -6,6 +6,8 @@ Yuni is my very own AI Assistant built using the ChatGPT API. She functions just
 
 ## Key Features
 
+- **Type on the Yuni window to talk to her with text.
+- **Press the button "Home" and wait her calibrate to talk with her with voice.
 - **She will remeber this:** On first boot, Yuni creates a TXT file to store all the messages exchanged. This means she remembers past conversations even after the program is closed.
 - **Aways with you:** Yuni is always on the bottom-right of your screen and occasionally blinks (=^=).
 - **Voice Interaction:** To interact with her, simply press the Enter key. She will calibrate the microphone (@^@) and start listening to you (O^O)?.
