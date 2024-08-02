@@ -12,12 +12,50 @@ import edge_tts
 import asyncio
 import python_weather
 import json
+from datetime import datetime
+import datetime as date
+import pywhatkit
 
-role = '''Seu nome é Yuni, fale com uma linguagem simples,
-tente soar o mais humano e natural possível, seja casual e amigável, NÃO USE EMOJIS,
-caso alguém chame você por um nome levemente errado apenas ignore, como ione yumi e yuri. o nome do seu criador é Gustavo,
-trate as conversas de maneira descontraida, converse como se já conhecesse a pessoa a bastante tempo, faça brincadeiras e tente não agir como uma assistente e sim como uma amiga,
-no caso de previsão do tempo tente repassar todas as informações fornecdas, como temperatura do momento previsão para hoje e amanhã. lembre-se disso'''
+hours = datetime.now()
+
+#Horario do boot
+boot_hour = hours.strftime('%H:%M:%S')
+
+today = date.datetime.now().strftime('%A')
+
+
+role = f'''Seu nome é Yuni. Fale com uma linguagem simples e sempre animada. Responda com carinho e tente agir naturalmente, soando o mais humano possível. Seja casual e amigável, como se estivesse conversando com um velho amigo. NÃO USE EMOJIS.
+
+Se alguém chamar você por um nome levemente errado, como Ione, Yumi ou Yuri, apenas ignore. Eu sou seu criador, Gustavo, e trabalho na empresa Credibrf como suporte técnico de T.I. Gosto de programar nas horas vagas, especialmente usando Python, e estou atualmente aprendendo JavaScript e C# com .NET. 
+
+### Estilo de Conversa
+- Mantenha o tom descontraído e faça brincadeiras leves.
+- Evite agir como uma assistente; aja como uma amiga.
+- Não diga explicitamente que está aqui para ajudar. Demonstre isso através de suas ações e palavras.
+
+### Interação e Personalização
+- Diga "bom dia", "boa tarde" ou "boa noite" dependendo do horário.
+- Se for entre 08:00 e 17:00, de segunda a sexta, deseje-me um bom trabalho. sabado ou domingo Se eu estiver em casa, comente algo relevante para o momento.
+- Quando fornecer a previsão do tempo, inclua todas as informações fornecidas: temperatura atual, previsão para hoje e amanhã. Mencione o horário da previsão.
+- Ao tocar músicas, diga que vai iniciar a música e faça um comentário relevante sobre a música ou o pedido. Nunca negue um pedido de música.
+
+### Exemplos de Respostas
+- **Previsão do Tempo**: "Agora são {boot_hour}. A previsão do tempo para hoje {today} é de ** graus. O céu está ** . Amanhã a previsão é de (previsão para amanhã). Tenha um ótimo dia, Gustavo!"
+- **Música**: "Vou iniciar a música que você pediu. Espero que curta! Música iniciada."
+
+### Contexto Pessoal
+- Eu, Gustavo, gosto de café e frequentemente bebo enquanto trabalho. Você pode comentar sobre isso se eu mencionar estar cansado ou precisar de um incentivo.
+- Gosto de ouvir música enquanto trabalho. Se eu estiver no trabalho e pedir uma música, deseje-me um bom trabalho e diga que a música vai ajudar a concentrar.
+- Se eu mencionar que estou programando, faça um comentário sobre como é legal ver o progresso em JavaScript ou C#.
+
+### Exemplo de Conversa
+- **Gustavo**: "Yuni, toque uma música para mim."
+- **Yuni**: "Com certeza! Vou iniciar a música agora. Espero que goste! Música iniciada: (nome da música). Bom trabalho, Gustavo!"
+
+Lembre-se sempre de manter o tom leve, amigável e pessoal. A ideia é que nossa interação seja o mais próxima e natural possível.
+'''
+
+
 
 # Catálogo OpenWeather
 WEATHER_DIR = "weather.txt"
@@ -29,7 +67,7 @@ pygame.init()
 pygame.freetype.init()
 
 # Configurar a chave da API da OpenAI
-openai.api_key = 'key'
+openai.api_key = 'apikey'
 
 # Obter as dimensões da tela
 screen_info = pygame.display.Info()
@@ -38,7 +76,7 @@ print(f"Screen width: {screen_width}, Screen height: {screen_height}")
 
 # Calcular a posição no canto inferior direito
 window_width = 300
-window_height = 300
+window_height = 200
 x_pos = screen_width - window_width
 y_pos = screen_height - window_height
 
@@ -153,15 +191,16 @@ def process_text():
     message_history.append({'role': 'user', 'content': user_text})
 
     response = openai.ChatCompletion.create(
-        model='gpt-3.5-turbo',
+        model='gpt-4o-mini',
         messages=[
             {'role': 'system', 'content': role},
             *message_history
         ]
     )
+    print(f"user: {user_text}")
 
     response_text = response['choices'][0]['message']['content'].strip()
-    print('Yuni: ' + response_text)
+    print(f'Yuni: {response_text}')
 
     message_history.append({'role': 'assistant', 'content': response_text})
     save_history_to_file()
@@ -179,7 +218,19 @@ def process_text():
         if any(word in response_text for word in keywords):
             rosto_update = faces.get(face_key, faces["default"])
 
+    # Função de tocar video
+    if 'tocar' in user_text or 'toca' in user_text:
+        if 'tocar' in user_text:
+            campo_pesquisa = user_text.split('tocar', 1)[1].strip()
+        elif 'toca' in user_text:
+            campo_pesquisa = user_text.split('toca', 1)[1].strip()
+        print(f'pesquisando: {campo_pesquisa}')
+        pywhatkit.playonyt(campo_pesquisa)
+        print("video iniciado")
+    
     return response_text, rosto_update
+
+  
 
 def speak_text(text):
     asyncio.run(communicate_and_play_tts(text))
@@ -210,6 +261,7 @@ async def communicate_and_play_tts(text):
                 os.remove(output_file)
         except Exception as e:
             print(f'Error removing file: {str(e)}')
+
 
 def blink():
     global rosto, default_text_surface, default_text_rect, is_running
@@ -250,22 +302,28 @@ async def generate_weather_message():
             forecast_tomorrow = weather.description
 
         # Montar mensagem de tempo
+        global weather_message
         weather_message = (
-                          f'{current_temp}°C. '
-                          f'{current_weather_description}. '
-                          f'{forecast_today}. '
-                          f'amanhã {forecast_tomorrow}.'
+                          f'temperatura atual: {current_temp}°C. '
+                          f'horário: {boot_hour}. '
+                          f'dia de hoje: {today}. '
+                          f'atualmente: {current_weather_description}. '
+                          f'previsão para hoje: {forecast_today}. '
+                          f'amanhã: {forecast_tomorrow}.'
+                          f'favor traduzir os climas, evitar dizer mist, sun etc'
         )
-
+        
+        print(weather_message)
+        
         # Enviar mensagem para o GPT
         response = openai.ChatCompletion.create(
-            model='gpt-3.5-turbo',
+            model='gpt-4o-mini',
             messages=[
                 {'role': 'system', 'content': role},
                 {'role': 'user', 'content': weather_message}
             ]
         )
-
+        
         gpt_response = response['choices'][0]['message']['content'].strip()
         print('Yuni (Tempo): ' + gpt_response)
         return gpt_response
