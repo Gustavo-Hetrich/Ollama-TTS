@@ -1,26 +1,27 @@
-# Meet Yuni!
+
+# Conheça a Yuni!
 
 ![Yuni](https://imgur.com/l5BbPAZ.png)
 
-Yuni is my very own AI Assistant built using the ChatGPT API. She functions just like a regular assistant, answering questions and listening to commands just like any other LLM!
+A Yuni é a minha assistente pessoal de IA construída usando a API ChatGPT. Ela funciona exatamente como um assistente regular, respondendo perguntas e ouvindo comandos como qualquer outro LLM!
 
-## Key Features
+## Principais Recursos
 
-- **Talk with text:** Type on the Yuni window to talk to her with text.
-- **Talk with voice:** Press the button "Home" and wait her calibrate to talk with her with voice.
-- **She will remeber this:** On first boot, Yuni creates a TXT file to store all the messages exchanged. This means she remembers past conversations even after the program is closed.
-- **Aways with you:** Yuni is always on the bottom-right of your screen and occasionally blinks (=^=).
-- **Voice Interaction:** To interact with her, simply press the Enter key. She will calibrate the microphone (@^@) and start listening to you (O^O)?.
-- **Emotions:** Depending on the answer, Yuni will make a new Unicode based face, like (T_T) or -\_('-'_/-.
-
----
-
-
-
-> **Note:** This is a side project primarily for fun, but if you have any ideas on how to improve it, please let me know!
-
-
+- **Converse por texto:** Digite na janela da Yuni para conversar com ela por texto.
+- **Converse por voz:** Pressione o botão "Home" e aguarde ela calibrar para conversar com ela por voz.
+- **Ela vai lembrar:** Na primeira inicialização, a Yuni cria um arquivo TXT para armazenar todas as mensagens trocadas. Isso significa que ela lembra das conversas passadas mesmo depois que o programa é fechado.
+- **Sempre com você:** A Yuni está sempre no canto inferior direito da sua tela e pisca ocasionalmente (=^=).
+- **Interação por voz:** Para interagir com ela, simplesmente pressione a tecla Home. Ela irá calibrar o microfone (@^@) e começar a ouvi-lo (O^O)?.
+- **Emoções:** Dependendo da resposta, a Yuni criará uma nova face baseada em Unicode, como (T_T) ou -\_('-'_/-.
+- **Musicas e Videos:** se você dizer "toca" ou "tocar" ela irá pesquisar no youtube e iniciar o primeiro video da pesquisa
+- **Arrastavel:** por enquanto ainda não muito funcional, mas você pode arrasta-la pela tela, talvez ela não goste muito (>^<)
 
 ---
 
-You can use and modify this code as much as you want
+> **Nota:** Este é um projeto secundário, principalmente para diversão, mas se você tiver ideias de como melhorá-lo, por favor, me avise!
+
+---
+
+Você pode usar e modificar este código como quiser.
+
+---
