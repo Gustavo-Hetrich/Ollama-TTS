@@ -18,7 +18,7 @@ A Yuni é a minha assistente pessoal de IA construída usando a API ChatGPT. Ela
 
 ---
 
-> **Nota:** Este é um projeto secundário, principalmente para diversão, mas se você tiver ideias de como melhorá-lo, por favor, me avise!
+> **Nota:** Este é um projeto bobo, principalmente para treinar com a API do chatGPT, mas se você tiver ideias de como melhorá-lo, por favor, me avise!
 
 ---
 
